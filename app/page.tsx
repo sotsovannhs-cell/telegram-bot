@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'motion/react';
-import { MapPin, ScanFace, QrCode, CreditCard, Clock, CheckCircle2, ChevronRight, Briefcase, LayoutDashboard, Users, Map as MapIcon, DollarSign, FileText, UserCheck } from 'lucide-react';
+import { MapPin, ScanFace, QrCode, CreditCard, Clock, CheckCircle2, ChevronRight, Briefcase, LayoutDashboard, Users, Map as MapIcon, DollarSign, FileText, UserCheck, Lock, Unlock } from 'lucide-react';
 import { format } from 'date-fns';
 import dynamic from 'next/dynamic';
 
@@ -40,6 +40,22 @@ export default function Home() {
   const [userLoc, setUserLoc] = useState<{lat: number, lng: number} | null>(null);
   const [distance, setDistance] = useState<number | null>(null);
   const [locError, setLocError] = useState<string>('');
+
+  // Admin Login State
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
+  const [adminLoginError, setAdminLoginError] = useState('');
+
+  const handleAdminLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (adminPassword.trim() !== '') { // Accepts any non-empty password as a mock
+      setIsAdminLoggedIn(true);
+      setAdminLoginError('');
+      setAdminPassword('');
+    } else {
+      setAdminLoginError('សូមបញ្ចូលលេខសម្ងាត់');
+    }
+  };
 
   const locateUser = () => {
     setLocError('');
@@ -109,6 +125,41 @@ export default function Home() {
       </div>
 
       {view === 'admin' ? (
+        !isAdminLoggedIn ? (
+          /* ADMIN LOGIN VIEW */
+          <div className="flex-1 flex items-center justify-center p-4 animate-in fade-in zoom-in-95 duration-300">
+            <div className="card w-full max-w-sm p-8 shadow-2xl relative overflow-hidden border-t-4 border-indigo-600">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
+              
+              <div className="flex justify-center mb-6">
+                <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-inner">
+                  <Lock size={32} />
+                </div>
+              </div>
+              
+              <h2 className="text-2xl font-bold text-center text-indigo-950 mb-2">ផ្ទាំងអ្នកគ្រប់គ្រង</h2>
+              <p className="text-center text-slate-500 text-sm mb-6">សូមបញ្ចូលលេខសម្ងាត់ដើម្បីចូលប្រើប្រាស់</p>
+              
+              <form onSubmit={handleAdminLogin} className="space-y-4 relative z-10">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">លេខសម្ងាត់ (ឧទាហរណ៍: admin)</label>
+                  <input 
+                    type="password" 
+                    value={adminPassword}
+                    onChange={(e) => setAdminPassword(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-800"
+                    placeholder="••••••••"
+                  />
+                  {adminLoginError && <p className="text-xs text-rose-500 mt-2 font-medium">{adminLoginError}</p>}
+                </div>
+                
+                <button type="submit" className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-md active:scale-95 flex items-center justify-center gap-2">
+                  <Unlock size={18} /> ចូលប្រព័ន្ធ
+                </button>
+              </form>
+            </div>
+          </div>
+        ) : (
         /* ADMIN DASHBOARD VIEW */
         <div className="flex flex-col h-screen w-full overflow-hidden animate-in fade-in zoom-in-95 duration-300">
            {/* Top Navigation */}
@@ -273,6 +324,7 @@ export default function Home() {
               </main>
             </div>
         </div>
+        )
       ) : (
         /* EMPLOYEE CHECK-IN VIEW (Mobile App Concept) */
         <div className="flex-1 flex flex-col items-center py-6 md:py-10 px-4 overflow-y-auto animate-in fade-in slide-in-from-bottom-8 duration-300">
