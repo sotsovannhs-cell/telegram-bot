@@ -5,6 +5,27 @@ import Image from 'next/image';
 import { motion } from 'motion/react';
 import { MapPin, ScanFace, QrCode, CreditCard, Clock, CheckCircle2, ChevronRight, Briefcase, LayoutDashboard, Users, Map as MapIcon, DollarSign, FileText } from 'lucide-react';
 import { format } from 'date-fns';
+import dynamic from 'next/dynamic';
+
+const MapLocation = dynamic(() => import('@/components/MapLocation'), {
+  ssr: false,
+  loading: () => <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400 text-sm">កំពុងផ្ទុកផែនទី...</div>
+});
+
+function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+  const R = 6371e3;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return Math.round(R * c);
+}
+
+const OFFICE_LAT = 11.5564;
+const OFFICE_LNG = 104.9282; // Phnom Penh
+const ALLOWED_RADIUS = 100; // meters
 
 export default function Home() {
   // New State for UI Selection
@@ -14,6 +35,37 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [isCheckedIn, setIsCheckedIn] = useState(false);
   const [checkMethod, setCheckMethod] = useState<string | null>(null);
+
+  // Map state
+  const [userLoc, setUserLoc] = useState<{lat: number, lng: number} | null>(null);
+  const [distance, setDistance] = useState<number | null>(null);
+  const [locError, setLocError] = useState<string>('');
+
+  const locateUser = () => {
+    setLocError('');
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const uLat = position.coords.latitude;
+          const uLng = position.coords.longitude;
+          setUserLoc({ lat: uLat, lng: uLng });
+          setDistance(getDistance(OFFICE_LAT, OFFICE_LNG, uLat, uLng));
+        },
+        error => {
+          setLocError('មិនអាចស្វែងរកទីតាំង។ សូមបើក GPS។');
+        },
+        { enableHighAccuracy: true }
+      );
+    } else {
+      setLocError('មិនគាំទ្រ GPS ទេ។');
+    }
+  };
+
+  useEffect(() => {
+    if (view === 'employee') {
+      locateUser();
+    }
+  }, [view]);
 
   useEffect(() => {
     setMounted(true);
@@ -239,6 +291,7 @@ export default function Home() {
               </div>
 
               <div className="text-center mt-2">
+                <h2 className="text-2xl font-bold text-white mb-4 drop-shadow">សួស្តី, កែវ ណារ៉េត! 👋</h2>
                 <h1 className="text-5xl font-bold tracking-tight drop-shadow-md" suppressHydrationWarning>{mounted ? format(currentTime, 'HH:mm:ss') : "--:--:--"}</h1>
                 <p className="mt-2 text-indigo-200 font-medium" suppressHydrationWarning>{mounted ? format(currentTime, 'dd MMMM yyyy') : "----"}</p>
               </div>
@@ -248,11 +301,9 @@ export default function Home() {
           <div className="w-full max-w-sm px-2 -mt-8 relative z-20 flex flex-col gap-4 md:gap-5 pb-20 md:pb-0">
             {/* Actions Card */}
             <div className="card p-6 shadow-xl">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-bold text-indigo-950">កត់ត្រាវត្តមាន</h3>
-                <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full flex items-center gap-1">
-                  <span className="status-pulse w-2 h-2 mr-1"></span> ព្រឹក
-                </span>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-indigo-950">កត់ត្រាវត្តមាន (GPS)</h3>
+                <button onClick={locateUser} className="text-xs text-indigo-600 hover:underline">ធ្វើបច្ចុប្បន្នភាព</button>
               </div>
 
               {isCheckedIn ? (
@@ -263,25 +314,45 @@ export default function Home() {
                 >
                   <CheckCircle2 size={56} className="mb-4" />
                   <h2 className="text-2xl font-bold">ជោគជ័យ!</h2>
-                  <p className="text-slate-500 mt-2 text-sm font-medium">កត់ត្រាដោយ {employeeMethods.find(m => m.id === checkMethod)?.title}</p>
+                  <p className="text-slate-500 mt-2 text-sm font-medium">កត់ត្រាដោយ {checkMethod === 'in' ? 'Check IN' : 'Check OUT'}</p>
                 </motion.div>
               ) : (
-                <div className="grid grid-cols-2 gap-3">
-                  {employeeMethods.map((method, i) => (
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.95 }}
-                      key={method.id}
-                      onClick={() => handleCheckIn(method.id)}
-                      className="flex flex-col items-center justify-center p-4 rounded-2xl border border-slate-100 bg-slate-50 hover:bg-white hover:shadow-md transition-all group"
+                <>
+                  <div className="h-48 w-full rounded-xl overflow-hidden mb-4 border border-slate-200">
+                    <MapLocation 
+                      officeLat={OFFICE_LAT} 
+                      officeLng={OFFICE_LNG} 
+                      userLat={userLoc?.lat} 
+                      userLng={userLoc?.lng}
+                      radius={ALLOWED_RADIUS}
+                    />
+                  </div>
+
+                  {locError && <div className="text-xs text-rose-500 mb-3 text-center">{locError}</div>}
+                  
+                  {!locError && distance !== null && (
+                    <div className={`text-center text-sm font-bold mb-4 ${distance <= ALLOWED_RADIUS ? 'text-green-600' : 'text-rose-600'}`}>
+                      ចម្ងាយ: {distance}m {distance <= ALLOWED_RADIUS ? '(ក្នុងតំបន់)' : '(ក្រៅតំបន់)'}
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <button 
+                      disabled={distance === null || distance > ALLOWED_RADIUS}
+                      onClick={() => handleCheckIn('in')}
+                      className="w-full py-3 bg-indigo-600 disabled:bg-slate-300 text-white rounded-xl font-bold transition-all shadow-md active:scale-95 disabled:active:scale-100 disabled:shadow-none"
                     >
-                      <div className={`w-10 h-10 rounded-full ${method.color} flex items-center justify-center text-white mb-2 shadow-inner group-hover:scale-110 transition-transform`}>
-                        <method.icon size={20} />
-                      </div>
-                      <span className="text-xs font-bold text-indigo-950">{method.title}</span>
-                    </motion.button>
-                  ))}
-                </div>
+                      Check IN
+                    </button>
+                    <button 
+                      disabled={distance === null || distance > ALLOWED_RADIUS}
+                      onClick={() => handleCheckIn('out')}
+                      className="w-full py-3 bg-rose-500 disabled:bg-slate-300 text-white rounded-xl font-bold transition-all shadow-md active:scale-95 disabled:active:scale-100 disabled:shadow-none"
+                    >
+                      Check OUT
+                    </button>
+                  </div>
+                </>
               )}
             </div>
 

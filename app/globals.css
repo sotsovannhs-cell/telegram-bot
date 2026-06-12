@@ -1,7 +1,16 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-kantumruy-pro);
+  --font-sans: var(--font-main);
+  --color-brand-primary: #4338ca;
+  --color-brand-secondary: #7c3aed;
+  --color-brand-dark: #1e1b4b;
+  --shadow-brand: 0 10px 25px -5px rgba(67, 56, 202, 0.1);
+  --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.08);
+}
+
+:root {
+  --gradient-brand: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-secondary) 100%);
 }
 
 body {
@@ -9,7 +18,7 @@ body {
 }
 
 .indigo-violet-bg { 
-  background: linear-gradient(135deg, #4338ca 0%, #7c3aed 100%); 
+  background: var(--gradient-brand);
 } 
 
 .glass { 
@@ -20,9 +29,9 @@ body {
 
 .card { 
   background: #ffffff; 
-  color: #1e1b4b; 
+  color: var(--color-brand-dark); 
   border-radius: 16px; 
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); 
+  box-shadow: var(--shadow-card); 
 } 
 
 .status-pulse { 
