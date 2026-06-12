@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'motion/react';
-import { MapPin, ScanFace, QrCode, CreditCard, Clock, CheckCircle2, ChevronRight, Briefcase, LayoutDashboard, Users, Map as MapIcon, DollarSign, FileText } from 'lucide-react';
+import { MapPin, ScanFace, QrCode, CreditCard, Clock, CheckCircle2, ChevronRight, Briefcase, LayoutDashboard, Users, Map as MapIcon, DollarSign, FileText, UserCheck } from 'lucide-react';
 import { format } from 'date-fns';
 import dynamic from 'next/dynamic';
 
@@ -139,13 +139,16 @@ export default function Home() {
                   <LayoutDashboard size={20} className="opacity-80" /> <span className="hidden md:inline">ផ្ទាំងគ្រប់គ្រង</span>
                 </div>
                 <div className="flex items-center justify-center md:justify-start gap-3 p-3 rounded-xl text-white/60 hover:bg-white/5 transition-colors cursor-pointer">
-                  <Users size={20} className="opacity-80" /> <span className="hidden md:inline">បញ្ជីបុគ្គលិក</span>
+                  <UserCheck size={20} className="opacity-80" /> <span className="hidden md:inline">វត្តមានបុគ្គលិក</span>
+                </div>
+                <div className="flex items-center justify-center md:justify-start gap-3 p-3 rounded-xl text-white/60 hover:bg-white/5 transition-colors cursor-pointer">
+                  <Users size={20} className="opacity-80" /> <span className="hidden md:inline">បញ្ជីឈ្មោះបុគ្គលិក</span>
                 </div>
                 <div className="flex items-center justify-center md:justify-start gap-3 p-3 rounded-xl text-white/60 hover:bg-white/5 transition-colors cursor-pointer">
                   <MapIcon size={20} className="opacity-80" /> <span className="hidden md:inline">តំបន់ Geofence</span>
                 </div>
                 <div className="flex items-center justify-center md:justify-start gap-3 p-3 rounded-xl text-white/60 hover:bg-white/5 transition-colors cursor-pointer">
-                  <DollarSign size={20} className="opacity-80" /> <span className="hidden md:inline">បៀវត្សរ៍ & HR</span>
+                  <DollarSign size={20} className="opacity-80" /> <span className="hidden md:inline">បើកប្រាក់បៀវត្សរ៍</span>
                 </div>
                 <div className="flex items-center justify-center md:justify-start gap-3 p-3 rounded-xl text-white/60 hover:bg-white/5 transition-colors cursor-pointer">
                   <FileText size={20} className="opacity-80" /> <span className="hidden md:inline">របាយការណ៍</span>
