@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Settings, Users, QrCode, Lock, UserCheck, CheckCircle2, ChevronRight, Briefcase, FileText, DollarSign, MapPin, Edit, Trash2, Plus, Upload, Calendar, CreditCard, Nfc } from 'lucide-react';
+import { Settings, Users, QrCode, Lock, UserCheck, CheckCircle2, ChevronRight, Briefcase, FileText, DollarSign, MapPin, Edit, Trash2, Plus, Upload, Calendar, CreditCard, Nfc, LayoutDashboard } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import ReportsTab from './components/ReportsTab';
 import PayrollTab from './components/PayrollTab';
 import TimesheetTab from './components/TimesheetTab';
 import EmployeeCardsTab from './components/EmployeeCardsTab';
 import ManualEntryTab from './components/ManualEntryTab';
+import DashboardTab from './components/DashboardTab';
 import { read, utils, write } from 'xlsx';
 
 import { Suspense } from 'react';
@@ -37,7 +38,7 @@ function AdminDashboardContent() {
   const [loginError, setLoginError] = useState('');
 
   // Dashboard Tabs
-  const [activeTab, setActiveTab] = useState<'employees' | 'qrcode' | 'telegram' | 'system' | 'reports' | 'payroll' | 'timesheet' | 'cards' | 'manual'>('system');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'employees' | 'qrcode' | 'telegram' | 'system' | 'reports' | 'payroll' | 'timesheet' | 'cards' | 'manual'>('dashboard');
 
   // Config State
   const [config, setConfig] = useState({
@@ -296,6 +297,14 @@ function AdminDashboardContent() {
 
         <div className="flex flex-col px-4 gap-1 py-6">
           <button 
+            onClick={() => setActiveTab('dashboard')}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'dashboard' ? 'bg-indigo-600 text-white shadow-md' : 'hover:bg-white/5'}`}
+          >
+            <LayoutDashboard size={18} className={activeTab === 'dashboard' ? 'text-white' : 'text-slate-400'} />
+            <span className="font-medium text-sm">ផ្ទាំងគ្រប់គ្រង (Dashboard)</span>
+          </button>
+
+          <button 
             onClick={() => setActiveTab('employees')}
             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'employees' ? 'bg-indigo-600 text-white shadow-md' : 'hover:bg-white/5'}`}
           >
@@ -376,20 +385,28 @@ function AdminDashboardContent() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden max-h-screen">
-        <header className="h-20 px-8 flex items-center justify-between bg-white border-b border-slate-200 shrink-0">
-           <h1 className="text-xl font-bold text-slate-800 tracking-tight">
-              {activeTab === 'system' ? 'មុខងារប្រព័ន្ធ (System Settings)' : 
-               activeTab === 'employees' ? 'គ្រប់គ្រងបុគ្គលិក (Employee Management)' : 
-               activeTab === 'qrcode' ? 'ការកំណត់កូដ QR' : 
-               activeTab === 'reports' ? 'របាយការណ៍បូកសរុប (Monthly Reports)' :
-               activeTab === 'payroll' ? 'គ្រប់គ្រងប្រាក់បៀវត្សរ៍ (Payroll)' : 'Telegram Bot API'}
-           </h1>
-           <a href="/" className="text-sm font-bold text-indigo-600 hover:underline">ទៅកាន់ App បុគ្គលិក &rarr;</a>
-        </header>
+      <main className="flex-1 flex flex-col overflow-hidden max-h-screen relative">
+        {activeTab !== 'dashboard' && (
+          <header className="h-20 px-8 flex items-center justify-between bg-white border-b border-slate-200 shrink-0">
+             <h1 className="text-xl font-bold text-slate-800 tracking-tight">
+                {activeTab === 'system' ? 'មុខងារប្រព័ន្ធ (System Settings)' : 
+                 activeTab === 'employees' ? 'គ្រប់គ្រងបុគ្គលិក (Employee Management)' : 
+                 activeTab === 'qrcode' ? 'ការកំណត់កូដ QR' : 
+                 activeTab === 'reports' ? 'របាយការណ៍បូកសរុប (Monthly Reports)' :
+                 activeTab === 'payroll' ? 'គ្រប់គ្រងប្រាក់បៀវត្សរ៍ (Payroll)' : 
+                 activeTab === 'cards' ? 'កាតបុគ្គលិក (NFC Cards)' :
+                 activeTab === 'timesheet' ? 'កាលវិភាគ (Timesheet)' :
+                 activeTab === 'manual' ? 'បញ្ជូលវត្តមានដោយដៃ (Manual Entry)' : 'Telegram Bot API'}
+             </h1>
+             <a href="/" className="text-sm font-bold text-indigo-600 hover:underline">ទៅកាន់ App បុគ្គលិក &rarr;</a>
+          </header>
+        )}
 
-        <div className="flex-1 overflow-y-auto p-6 md:p-8">
+        <div className={`flex-1 overflow-y-auto relative ${activeTab === 'dashboard' ? 'p-0 bg-slate-50' : 'p-6 md:p-8'}`}>
            
+           {/* DASHBOARD TAB */}
+           {activeTab === 'dashboard' && <DashboardTab employees={employees} config={config} orgSlug={orgSlug} setActiveTab={setActiveTab} />}
+
            {/* SYSTEM TAB */}
            {activeTab === 'system' && (
              <div className="max-w-4xl space-y-6">
