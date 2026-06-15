@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { Users, UserCheck, Clock, UserX, ArrowRight, LayoutDashboard, Settings, Bell, Briefcase } from 'lucide-react';
 import { format } from 'date-fns';
@@ -179,7 +178,7 @@ export default function DashboardTab({ employees, config, orgSlug, setActiveTab 
                      </p>
                      
                      <div className="flex flex-wrap items-center gap-3">
-                        <button onClick={() => window.open('/', '_blank')} className="px-5 py-2.5 bg-white text-indigo-700 font-bold rounded-lg shadow-md hover:bg-slate-50 transition-all text-sm flex items-center gap-2">
+                        <button onClick={() => window.open('/employee', '_blank')} className="px-5 py-2.5 bg-white text-indigo-700 font-bold rounded-lg shadow-md hover:bg-slate-50 transition-all text-sm flex items-center gap-2">
                            មុខងារបុគ្គលិក <ArrowRight size={16} />
                         </button>
                         <button onClick={() => setActiveTab('system')} className="px-5 py-2.5 bg-transparent border border-indigo-400 text-white font-bold rounded-lg hover:bg-white/10 transition-all text-sm">
