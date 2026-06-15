@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Users, UserCheck, Clock, UserX, ArrowRight, LayoutDashboard, Settings, Bell, Briefcase } from 'lucide-react';
 import { format } from 'date-fns';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 export default function DashboardTab({ employees, config, orgSlug, setActiveTab }: { employees: any[], config: any, orgSlug: string, setActiveTab: (tab: any) => void }) {
   const [stats, setStats] = useState({
@@ -192,27 +193,40 @@ export default function DashboardTab({ employees, config, orgSlug, setActiveTab 
                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
                   <div className="flex justify-between items-start mb-6">
                      <div>
-                       <h3 className="font-bold text-slate-800 text-sm">របាយការណ៍វត្តមានប្រចាំសប្តាហ៍ (Weekly Trends)</h3>
-                       <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-wider">ទិន្នន័យ 30 ថ្ងៃចុងក្រោយ / Last 30 days trends</p>
+                       <h3 className="font-bold text-slate-800 text-sm">របាយការណ៍វត្តមានថ្ងៃនេះ (Today&apos;s Attendance)</h3>
+                       <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-wider">ទិន្នន័យជាក់ស្តែង / Real-time Data</p>
                      </div>
-                     <select className="bg-slate-50 border border-slate-200 text-slate-600 text-xs rounded-lg px-2 py-1.5 outline-none font-medium text-right hover:bg-slate-100 cursor-pointer">
-                        <option>៣០ ថ្ងៃចុងក្រោយ (30 Days)</option>
-                        <option>សប្តាហ៍នេះ (This Week)</option>
-                     </select>
                   </div>
                   
-                  <div className="h-48 w-full bg-slate-50 rounded-xl relative overflow-hidden border border-slate-100 flex items-end pt-8">
-                     {/* Fake Line Chart */}
-                     <div className="w-full h-full text-[#6366f1] opacity-20 flex items-end">
-                        <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="w-full h-full fill-current">
-                           <path d="M0 40 L0 30 L10 32 L20 28 L30 35 L40 25 L50 20 L60 22 L70 15 L80 18 L90 10 L100 5 L100 40 Z"></path>
-                        </svg>
-                     </div>
-                     <div className="absolute inset-0 flex items-end">
-                        <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="w-full h-full stroke-current text-[#6366f1] stroke-[0.5] fill-none">
-                           <path d="M0 30 L10 32 L20 28 L30 35 L40 25 L50 20 L60 22 L70 15 L80 18 L90 10 L100 5"></path>
-                        </svg>
-                     </div>
+                  <div className="h-[220px] w-full bg-slate-50/50 rounded-xl relative overflow-hidden border border-slate-100 flex items-center justify-center p-4">
+                     <ResponsiveContainer width="100%" height="100%">
+                       <PieChart>
+                         <Pie
+                           data={[
+                             { name: 'វត្តមាន (Present)', value: stats.present },
+                             { name: 'អវត្តមាន (Absent)', value: stats.absent }
+                           ]}
+                           cx="50%"
+                           cy="50%"
+                           innerRadius={60}
+                           outerRadius={80}
+                           paddingAngle={5}
+                           dataKey="value"
+                         >
+                           <Cell fill="#6366f1" />
+                           <Cell fill="#f43f5e" />
+                         </Pie>
+                         <Tooltip 
+                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)' }}
+                         />
+                         <Legend 
+                            verticalAlign="bottom" 
+                            height={36} 
+                            iconType="circle"
+                            formatter={(value, entry, index) => <span className="text-xs font-medium text-slate-600">{value}</span>}
+                         />
+                       </PieChart>
+                     </ResponsiveContainer>
                   </div>
                </div>
             </div>
