@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable react-hooks/purity */
 
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';

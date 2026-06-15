@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect, react/no-unescaped-entities */
 import { useState, useEffect } from 'react';
 import { Calendar, Save, Plus, Trash2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';

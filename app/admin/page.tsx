@@ -283,7 +283,8 @@ function AdminDashboardContent() {
 
   return (
     <div className="flex flex-col md:flex-row h-screen w-full bg-[#f8fafc] text-slate-800 overflow-hidden font-sans">
-      {/* Sidebar */}
+      {/* Sidebar - hidden when on dashboard to match screenshot landing layout */}
+      {activeTab !== 'dashboard' && (
       <aside className="w-full md:w-64 bg-[#161b22] text-slate-300 flex flex-col shrink-0 overflow-y-auto">
         <div className="p-6 pb-8 flex items-center gap-3 border-b border-white/5">
           <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white">
@@ -383,6 +384,7 @@ function AdminDashboardContent() {
            </button>
         </div>
       </aside>
+      )}
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden max-h-screen relative">

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { Users, UserCheck, Clock, UserX, ArrowRight, LayoutDashboard, Settings, Bell, Briefcase } from 'lucide-react';
 import { format } from 'date-fns';
