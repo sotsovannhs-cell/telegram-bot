@@ -90,10 +90,10 @@ function AdminDashboardContent() {
     
     // Default fallback if running without owner setup
     if (!currentOrg && orgSlug === 'default') {
-      currentOrg = { admin_password: 'admin' };
+      currentOrg = { admin_password: process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin' };
     }
 
-    if (password === 'admin' || (currentOrg && password === currentOrg.admin_password)) {
+    if (password === (process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin') || (currentOrg && password === currentOrg.admin_password)) {
       setIsLoggedIn(true);
       sessionStorage.setItem('adminLoggedIn', 'true');
       setLoginError('');
